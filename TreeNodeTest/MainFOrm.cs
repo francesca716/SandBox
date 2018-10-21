@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
@@ -36,12 +37,13 @@ namespace TreeNodeTest
             this.contentListView.Columns.Add("名前");
             this.contentListView.Columns.Add("更新日時");
             this.contentListView.Columns.Add("サイズ");
+            this.contentListView.AutoArrange = true;
 
             this.contentListView.AutoResizeColumns(ColumnHeaderAutoResizeStyle.HeaderSize);
 
             try
             {
-                if(Directory.Exists(filePath))
+                if (Directory.Exists(filePath))
                 {
                     //フォルダ一覧
                     DirectoryInfo directoryList = new DirectoryInfo(filePath);
@@ -60,13 +62,18 @@ namespace TreeNodeTest
                     foreach (var file in fileList)
                     {
                         FileInfo fileInfo = new FileInfo(file);
-                        ListViewItem item = new ListViewItem(fileInfo.Name);
+                        ListViewItem item = new ListViewItem(Path.GetFileName(filePath));
                         item.SubItems.Add(String.Format("{0:yyyy/MM/dd HH:mm:ss}", fileInfo.LastAccessTime));
                         item.SubItems.Add(getFileSize(fileInfo.Length));
+                        contentListView.Items.Add(item);
                     }
+                }
+                else
+                {
+                    var fileInfo = this.filesTreeView.SelectedNode.Text;
+                    ListViewItem item = new ListViewItem(Path.GetFileName(fileInfo));
 
                 }
-
             }
             catch (IOException e)
             {
@@ -149,7 +156,7 @@ namespace TreeNodeTest
 
             try
             {
-                if(Directory.Exists(path))
+                if (Directory.Exists(path))
                 {
                     DirectoryInfo directoryList = new DirectoryInfo(path);
 
@@ -159,21 +166,42 @@ namespace TreeNodeTest
                         childNode.Nodes.Add(new TreeNode());
                         node.Nodes.Add(childNode);
                     }
-                    List<String> fileList = Directory.GetFiles(path).ToList();
+
+                    List<String> fileList = Directory.GetFiles(path).ToList<String>();
                     foreach (var fi in fileList)
                     {
-                        childNode = new TreeNode(fi);
+                        childNode = new TreeNode(Path.GetFileName(fi));
                         childNode.Nodes.Add(new TreeNode());
                         node.Nodes.Add(childNode);
                     }
-                }             
+                }
             }
             catch (IOException ie)
             {
                 MessageBox.Show(ie.Message, "選択エラー");
             }
         }
-        #endregion
+        private void filesTreeView_NodeMouseDoubleClick(object sender, TreeNodeMouseClickEventArgs e)
+        {
+            TreeNode node = e.Node;
+            String path = node.FullPath;
+            node.Nodes.Clear();
+
+            try
+            {
+                if (File.Exists(path))
+                {
+                    Process.Start(path);
+                }
+            }
+            catch (IOException ie)
+            {
+                MessageBox.Show(ie.Message, "選択エラー");
+            }
+        }
     }
+    #endregion
+
+
 }
 

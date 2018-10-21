@@ -43,6 +43,7 @@
             this.filesTreeView.TabIndex = 0;
             this.filesTreeView.BeforeExpand += new System.Windows.Forms.TreeViewCancelEventHandler(this.filesTreeView_BeforeExpand);
             this.filesTreeView.NodeMouseClick += new System.Windows.Forms.TreeNodeMouseClickEventHandler(this.filesTreeView_NodeMouseClick);
+            this.filesTreeView.NodeMouseDoubleClick += new System.Windows.Forms.TreeNodeMouseClickEventHandler(this.filesTreeView_NodeMouseDoubleClick);
             // 
             // contentListView
             // 
